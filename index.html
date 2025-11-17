@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema di Gestione Libreria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#0EA5E9', // sky-500
+              'primary-dark': '#0284C7', // sky-600
+              'primary-darkest': '#075985', // sky-800
+              'primary-light': '#E0F2FE', // sky-100
+              'primary-focus': '#0284C7', // sky-600
+              'secondary': '#F97316', // orange-500
+              'accent-green': '#14B8A6', // teal-500
+              'accent-green-light': '#CCFBF1', // teal-100
+              'accent-amber': '#F97316', // orange-500
+              'accent-amber-light': '#FFEDD5', // orange-100
+              'neutral': '#334155', // slate-700
+              'base-100': '#F1F5F9', // slate-100
+              'info': '#3B82F6',
+              'success': '#10B981',
+              'warning': '#F59E0B',
+              'error': '#EF4444',
+            },
+            animation: {
+              'fade-in-down': 'fade-in-down 0.3s ease-out forwards',
+            },
+            keyframes: {
+              'fade-in-down': {
+                '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.1",
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-slate-50">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
