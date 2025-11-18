@@ -1,18 +1,31 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  User as FirebaseUser
+} from 'firebase/auth';
+import { auth, googleProvider } from '../config/firebase';
 
 interface User {
   id: string;
   username: string;
   email: string;
+  photoURL?: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string) => Promise<boolean>;
+  firebaseUser: FirebaseUser | null;
+  login: (email: string, password: string) => Promise<boolean>;
   loginWithGoogle: () => Promise<boolean>;
   register: (username: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,47 +44,39 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Verifica se l'utente è già autenticato al caricamento
+  // Ascolta i cambiamenti nello stato di autenticazione Firebase
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Errore nel parsing dell\'utente salvato:', error);
-        localStorage.removeItem('user');
-      }
-    }
-  }, []);
-
-  const login = async (username: string, password: string): Promise<boolean> => {
-    try {
-      // Ottieni gli utenti registrati
-      const usersData = localStorage.getItem('registeredUsers');
-      const users = usersData ? JSON.parse(usersData) : [];
-
-      // Verifica le credenziali
-      const foundUser = users.find(
-        (u: any) => u.username === username && u.password === password
-      );
-
-      if (foundUser) {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
         const userData: User = {
-          id: foundUser.id,
-          username: foundUser.username,
-          email: foundUser.email,
+          id: firebaseUser.uid,
+          username: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Utente',
+          email: firebaseUser.email || '',
+          photoURL: firebaseUser.photoURL || undefined,
         };
         setUser(userData);
+        setFirebaseUser(firebaseUser);
         setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(userData));
-        return true;
+      } else {
+        setUser(null);
+        setFirebaseUser(null);
+        setIsAuthenticated(false);
       }
-      return false;
-    } catch (error) {
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return true;
+    } catch (error: any) {
       console.error('Errore durante il login:', error);
       return false;
     }
@@ -79,80 +84,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const loginWithGoogle = async (): Promise<boolean> => {
     try {
-      // Simulazione login Google (in produzione usare Google OAuth)
-      // Per ora creiamo un utente di esempio
-      const googleUser: User = {
-        id: 'google_' + Date.now(),
-        username: 'utente_google',
-        email: 'utente@gmail.com',
-      };
-      
-      setUser(googleUser);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(googleUser));
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log('✅ Login Google riuscito:', result.user.email);
       return true;
-    } catch (error) {
-      console.error('Errore durante il login con Google:', error);
+    } catch (error: any) {
+      console.error('❌ Errore durante il login con Google:', error);
+      console.error('Codice errore:', error.code);
+      console.error('Messaggio:', error.message);
+      
+      // Mostra errore più specifico all'utente
+      if (error.code === 'auth/popup-blocked') {
+        alert('Popup bloccato! Abilita i popup per questo sito.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        console.log('Popup chiuso dall\'utente');
+      } else if (error.code === 'auth/unauthorized-domain') {
+        alert('Dominio non autorizzato in Firebase Console. Aggiungi localhost alla lista dei domini autorizzati.');
+      } else {
+        alert(`Errore: ${error.message}`);
+      }
+      
       return false;
     }
   };
 
   const register = async (username: string, email: string, password: string): Promise<boolean> => {
     try {
-      // Ottieni gli utenti registrati
-      const usersData = localStorage.getItem('registeredUsers');
-      const users = usersData ? JSON.parse(usersData) : [];
-
-      // Verifica se username o email esistono già
-      const usernameExists = users.some((u: any) => u.username === username);
-      const emailExists = users.some((u: any) => u.email === email);
-
-      if (usernameExists || emailExists) {
-        return false;
-      }
-
-      // Crea nuovo utente
-      const newUser = {
-        id: 'user_' + Date.now(),
-        username,
-        email,
-        password, // In produzione, hashare la password!
-      };
-
-      users.push(newUser);
-      localStorage.setItem('registeredUsers', JSON.stringify(users));
-
-      // Auto-login dopo registrazione
-      const userData: User = {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-      };
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Aggiorna il profilo con il nome utente
+      await updateProfile(userCredential.user, {
+        displayName: username
+      });
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Errore durante la registrazione:', error);
       return false;
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('user');
+  const logout = async (): Promise<void> => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Errore durante il logout:', error);
+    }
   };
 
   const value: AuthContextType = {
     user,
+    firebaseUser,
     login,
     loginWithGoogle,
     register,
     logout,
     isAuthenticated,
+    loading,
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-sky-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-slate-600">Caricamento...</p>
+        </div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

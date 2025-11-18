@@ -7,7 +7,7 @@ interface LoginViewProps {
 
 export const LoginView: React.FC<LoginViewProps> = ({ onNavigateToRegister }) => {
   const { login, loginWithGoogle } = useAuth();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -17,15 +17,15 @@ export const LoginView: React.FC<LoginViewProps> = ({ onNavigateToRegister }) =>
     setError('');
     setIsLoading(true);
 
-    if (!username || !password) {
-      setError('Inserisci username e password');
+    if (!email || !password) {
+      setError('Inserisci email e password');
       setIsLoading(false);
       return;
     }
 
-    const success = await login(username, password);
+    const success = await login(email, password);
     if (!success) {
-      setError('Credenziali non valide. Riprova.');
+      setError('Credenziali non valide. Verifica email e password.');
     }
     setIsLoading(false);
   };
@@ -33,11 +33,18 @@ export const LoginView: React.FC<LoginViewProps> = ({ onNavigateToRegister }) =>
   const handleGoogleLogin = async () => {
     setError('');
     setIsLoading(true);
-    const success = await loginWithGoogle();
-    if (!success) {
-      setError('Errore durante il login con Google');
+    
+    try {
+      const success = await loginWithGoogle();
+      if (!success) {
+        setError('Impossibile completare il login con Google. Controlla la console per dettagli.');
+      }
+    } catch (err: any) {
+      console.error('Errore nel componente:', err);
+      setError('Errore imprevisto durante il login con Google');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -59,18 +66,18 @@ export const LoginView: React.FC<LoginViewProps> = ({ onNavigateToRegister }) =>
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-5">
           <form onSubmit={handleSubmit} className="space-y-3.5">
-            {/* Username */}
+            {/* Email */}
             <div>
-              <label htmlFor="username" className="block text-sm font-semibold text-slate-700 mb-1">
-                Username
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-1">
+                Email
               </label>
               <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-lg border border-slate-300 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                placeholder="Inserisci il tuo username"
+                placeholder="tua@email.com"
                 disabled={isLoading}
               />
             </div>

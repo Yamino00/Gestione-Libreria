@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import admin from 'firebase-admin';
 import userRoutes from './routes/userRoutes.js';
 import bookRoutes from './routes/bookRoutes.js';
 import loanRoutes from './routes/loanRoutes.js';
@@ -14,6 +15,16 @@ const __dirname = path.dirname(__filename);
 
 // Carica .env.local dalla root del progetto
 dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+
+// Inizializza Firebase Admin
+try {
+  admin.initializeApp({
+    projectId: 'libreria-projectwork',
+  });
+  console.log('✅ Firebase Admin inizializzato');
+} catch (error) {
+  console.error('❌ Errore nell\'inizializzazione di Firebase Admin:', error);
+}
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;

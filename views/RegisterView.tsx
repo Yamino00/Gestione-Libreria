@@ -57,7 +57,7 @@ export const RegisterView: React.FC<RegisterViewProps> = ({ onNavigateToLogin })
 
     const success = await register(username, email, password);
     if (!success) {
-      setError('Username o email già esistenti. Scegli credenziali diverse.');
+      setError('Errore durante la registrazione. Verifica i tuoi dati o prova con un\'altra email.');
     }
     setIsLoading(false);
   };

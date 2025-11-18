@@ -1,32 +1,37 @@
 # 📚 Sistema di Gestione Libreria
 
-Un'applicazione web completa per la gestione di una libreria, con funzionalità per la gestione di utenti, libri e prestiti. Include statistiche avanzate e un backend RESTful con MongoDB Atlas.
+Un'applicazione web completa per la gestione di una libreria, con funzionalità per la gestione di utenti, libri e prestiti. Include statistiche avanzate, autenticazione Firebase e backend RESTful con MongoDB Atlas.
 
 ![React](https://img.shields.io/badge/React-19.2.0-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue)
 ![Express](https://img.shields.io/badge/Express-4.18.2-green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green)
+![Firebase](https://img.shields.io/badge/Firebase-Auth-orange)
 
 ## ✨ Caratteristiche
 
-- **Dashboard Interattiva** - Panoramica in tempo reale con statistiche e grafici
-- **Gestione Libri** - CRUD completo per il catalogo librario
-- **Gestione Utenti** - Anagrafica utenti con codice fiscale
-- **Registro Prestiti** - Tracciamento prestiti attivi e storici
-- **Backend REST API** - Server Express.js con MongoDB Atlas
-- **Design Responsive** - Interfaccia moderna e adattiva per desktop e mobile
-- **Grafici Avanzati** - Visualizzazione prestiti mensili con Recharts
+- **🔐 Autenticazione Firebase** - Login con email/password e Google OAuth
+- **📊 Dashboard Interattiva** - Panoramica in tempo reale con statistiche e grafici
+- **📚 Gestione Libri** - CRUD completo per il catalogo librario
+- **👥 Gestione Utenti** - Anagrafica utenti con codice fiscale
+- **📖 Registro Prestiti** - Tracciamento prestiti attivi e storici
+- **🔒 API Protette** - JWT tokens e middleware di autenticazione
+- **🚀 Backend REST API** - Server Express.js con MongoDB Atlas
+- **📱 Design Responsive** - Interfaccia moderna e adattiva per desktop e mobile
+- **📈 Grafici Avanzati** - Visualizzazione prestiti mensili con Recharts
 
 ## 🏗️ Architettura
 
 ### Frontend
 - **React 19** con TypeScript
+- **Firebase Auth** - Autenticazione e Google OAuth
 - **Vite** come build tool e dev server
 - **Recharts** per la visualizzazione dati
 - **CSS Utility Classes** (Tailwind-style)
 
 ### Backend
 - **Express.js** - Framework web REST
+- **Firebase Admin** - Verifica JWT tokens
 - **MongoDB Atlas** - Database cloud NoSQL
 - **Mongoose** - ODM per MongoDB
 - **TypeScript** - Type safety completo
@@ -102,6 +107,8 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/libreria?retryWr
 
 Sostituisci `username`, `password` e l'URL con i tuoi dati MongoDB Atlas.
 
+> **Nota**: Firebase è già configurato nel codice con il progetto `libreria-projectwork`
+
 ### 5. Avvia l'Applicazione
 
 **Un solo comando per avviare tutto:**
@@ -111,7 +118,18 @@ npm run dev
 
 Questo avvierà automaticamente sia il backend (porta 5000) che il frontend (porta 3000).
 
-### 6. Apri l'Applicazione
+### 6. Primo Accesso
+
+**Registrati con Email/Password:**
+- Apri `http://localhost:3000`
+- Clicca "Registrati qui"
+- Compila il form e registrati
+
+**Oppure usa Google OAuth:**
+- Clicca "Accedi con Google"
+- Seleziona il tuo account Google
+
+### 7. Inizia a Usare l'Applicazione
 
 Naviga su `http://localhost:3000` nel tuo browser.
 
@@ -132,26 +150,34 @@ npm run dev:backend
 
 ## 📡 API Endpoints
 
+### Autenticazione
+Tutte le API richiedono un token JWT Firebase nell'header:
+```
+Authorization: Bearer <firebase-jwt-token>
+```
+
 ### Utenti
-- `GET /api/users` - Lista tutti gli utenti
-- `POST /api/users` - Crea nuovo utente
-- `PUT /api/users/:id` - Aggiorna utente
-- `DELETE /api/users/:id` - Elimina utente
+- `GET /api/users` - Lista tutti gli utenti 🔒
+- `POST /api/users` - Crea nuovo utente 🔒
+- `PUT /api/users/:id` - Aggiorna utente 🔒
+- `DELETE /api/users/:id` - Elimina utente 🔒
 
 ### Libri
-- `GET /api/books` - Lista tutti i libri
-- `POST /api/books` - Aggiungi nuovo libro
-- `PUT /api/books/:id` - Aggiorna libro
-- `DELETE /api/books/:id` - Elimina libro
+- `GET /api/books` - Lista tutti i libri 🔒
+- `POST /api/books` - Aggiungi nuovo libro 🔒
+- `PUT /api/books/:id` - Aggiorna libro 🔒
+- `DELETE /api/books/:id` - Elimina libro 🔒
 
 ### Prestiti
-- `GET /api/loans` - Lista tutti i prestiti
-- `POST /api/loans` - Registra nuovo prestito
-- `PUT /api/loans/:id/return` - Segna libro come restituito
-- `DELETE /api/loans/:id` - Elimina prestito
+- `GET /api/loans` - Lista tutti i prestiti 🔒
+- `POST /api/loans` - Registra nuovo prestito 🔒
+- `PUT /api/loans/:id/return` - Segna libro come restituito 🔒
+- `DELETE /api/loans/:id` - Elimina prestito 🔒
 
 ### Health Check
-- `GET /api/health` - Stato del server
+- `GET /api/health` - Stato del server (pubblica)
+
+🔒 = Richiede autenticazione Firebase
 
 ## 🗄️ Schema Database
 
@@ -235,10 +261,29 @@ npm start        # Avvia server compilato
 
 ## 🔒 Sicurezza
 
-- Credenziali MongoDB protette in file `.env` (esclusi da Git)
-- Validazione dati lato server con Mongoose
-- Gestione errori centralizzata
-- CORS configurato per ambiente di sviluppo
+### ✅ Implementato
+- 🔐 **Firebase Authentication** - Gestione utenti sicura
+- 🔑 **JWT Tokens** - Autenticazione basata su token
+- 🛡️ **Password Hashate** - Firebase gestisce l'hashing automaticamente
+- 🌐 **Google OAuth 2.0** - Login sicuro con Google
+- 🔐 **Middleware di Autenticazione** - Protezione API lato server
+- 📝 **Token Verification** - Verifica JWT su ogni richiesta
+- 🔒 **CORS Configurato** - Protezione cross-origin
+- 🗄️ **MongoDB Security** - Credenziali protette in `.env.local`
+
+### ⚠️ Da Implementare per Produzione
+- Rate Limiting per prevenire abusi
+- HTTPS obbligatorio
+- Validazione input più robusta
+- Logging e monitoring
+- Backup automatici database
+
+## 📚 Documentazione Aggiuntiva
+
+- 📖 [QUICKSTART.md](QUICKSTART.md) - Guida rapida per iniziare
+- 🔥 [FIREBASE_INTEGRATION.md](FIREBASE_INTEGRATION.md) - Dettagli integrazione Firebase
+- 🔐 [AUTENTICAZIONE.md](AUTENTICAZIONE.md) - Sistema di autenticazione
+- 📘 [GUIDA_AUTENTICAZIONE.md](GUIDA_AUTENTICAZIONE.md) - Guida utente autenticazione
 
 ## 🤝 Contribuire
 
@@ -268,6 +313,15 @@ Questo progetto è open source.
 ## 🙏 Riconoscimenti
 
 - [React](https://react.dev/)
+- [Firebase](https://firebase.google.com/)
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- [Express.js](https://expressjs.com/)
+- [Vite](https://vitejs.dev/)
+- [Recharts](https://recharts.org/)
+
+---
+
+✨ **Progetto sviluppato con ❤️ per ITS Apulia Digital Maker**
 - [Express.js](https://expressjs.com/)
 - [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 - [Recharts](https://recharts.org/)

@@ -1,8 +1,35 @@
 
 import { useState, useEffect } from 'react';
+import { auth } from '../config/firebase';
 import type { User, Book, Loan, LibraryData } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+
+// Helper per ottenere il token Firebase
+const getAuthToken = async (): Promise<string | null> => {
+  const user = auth.currentUser;
+  if (user) {
+    try {
+      return await user.getIdToken();
+    } catch (error) {
+      console.error('Errore nel recupero del token:', error);
+      return null;
+    }
+  }
+  return null;
+};
+
+// Helper per creare headers con autenticazione
+const getAuthHeaders = async () => {
+  const token = await getAuthToken();
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
 
 export const useLibraryData = (): LibraryData => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,7 +45,8 @@ export const useLibraryData = (): LibraryData => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${API_URL}/users`);
+      const headers = await getAuthHeaders();
+      const response = await fetch(`${API_URL}/users`, { headers });
       const data = await response.json();
       setUsers(data.map((u: any) => ({ ...u, id: u._id })));
     } catch (error) {
@@ -28,7 +56,8 @@ export const useLibraryData = (): LibraryData => {
 
   const fetchBooks = async () => {
     try {
-      const response = await fetch(`${API_URL}/books`);
+      const headers = await getAuthHeaders();
+      const response = await fetch(`${API_URL}/books`, { headers });
       const data = await response.json();
       setBooks(data.map((b: any) => ({ ...b, id: b._id })));
     } catch (error) {
@@ -38,7 +67,8 @@ export const useLibraryData = (): LibraryData => {
 
   const fetchLoans = async () => {
     try {
-      const response = await fetch(`${API_URL}/loans`);
+      const headers = await getAuthHeaders();
+      const response = await fetch(`${API_URL}/loans`, { headers });
       const data = await response.json();
       setLoans(data.map((l: any) => ({ 
         ...l, 
@@ -53,9 +83,10 @@ export const useLibraryData = (): LibraryData => {
 
   const addUser = async (user: Omit<User, 'id'>) => {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_URL}/users`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(user)
       });
       const newUser = await response.json();
@@ -67,9 +98,10 @@ export const useLibraryData = (): LibraryData => {
 
   const updateUser = async (updatedUser: User) => {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_URL}/users/${updatedUser.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(updatedUser)
       });
       const updated = await response.json();
@@ -81,7 +113,8 @@ export const useLibraryData = (): LibraryData => {
 
   const deleteUser = async (userId: string) => {
     try {
-      await fetch(`${API_URL}/users/${userId}`, { method: 'DELETE' });
+      const headers = await getAuthHeaders();
+      await fetch(`${API_URL}/users/${userId}`, { method: 'DELETE', headers });
       setUsers(prev => prev.filter(user => user.id !== userId));
       setLoans(prev => prev.filter(loan => loan.userId !== userId));
     } catch (error) {
@@ -91,9 +124,10 @@ export const useLibraryData = (): LibraryData => {
 
   const addBook = async (book: Omit<Book, 'id'>) => {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_URL}/books`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(book)
       });
       const newBook = await response.json();
@@ -105,9 +139,10 @@ export const useLibraryData = (): LibraryData => {
 
   const updateBook = async (updatedBook: Book) => {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_URL}/books/${updatedBook.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(updatedBook)
       });
       const updated = await response.json();
@@ -119,7 +154,8 @@ export const useLibraryData = (): LibraryData => {
 
   const deleteBook = async (bookId: string) => {
     try {
-      await fetch(`${API_URL}/books/${bookId}`, { method: 'DELETE' });
+      const headers = await getAuthHeaders();
+      await fetch(`${API_URL}/books/${bookId}`, { method: 'DELETE', headers });
       setBooks(prev => prev.filter(book => book.id !== bookId));
       setLoans(prev => prev.filter(loan => loan.bookId !== bookId));
     } catch (error) {
@@ -129,9 +165,10 @@ export const useLibraryData = (): LibraryData => {
 
   const addLoan = async (loan: Omit<Loan, 'id' | 'dataRestituzione' | 'dataPrestito'>) => {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_URL}/loans`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(loan)
       });
       const newLoan = await response.json();
@@ -148,8 +185,10 @@ export const useLibraryData = (): LibraryData => {
 
   const returnLoan = async (loanId: string) => {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_URL}/loans/${loanId}/return`, {
-        method: 'PUT'
+        method: 'PUT',
+        headers
       });
       const updated = await response.json();
       setLoans(prev => prev.map(loan => 
@@ -167,7 +206,8 @@ export const useLibraryData = (): LibraryData => {
     
   const deleteLoan = async (loanId: string) => {
     try {
-      await fetch(`${API_URL}/loans/${loanId}`, { method: 'DELETE' });
+      const headers = await getAuthHeaders();
+      await fetch(`${API_URL}/loans/${loanId}`, { method: 'DELETE', headers });
       setLoans(prev => prev.filter(loan => loan.id !== loanId));
     } catch (error) {
       console.error('Errore nell\'eliminazione del prestito:', error);
