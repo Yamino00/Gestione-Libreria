@@ -75,7 +75,15 @@ git clone https://github.com/Yamino00/Gestione-Libreria.git
 cd Gestione-Libreria
 ```
 
-### 2. Configura MongoDB Atlas
+### 2. Installa le Dipendenze
+
+```bash
+npm run install:all
+```
+
+Questo comando installerà automaticamente le dipendenze sia del frontend che del backend.
+
+### 3. Configura MongoDB Atlas
 
 1. Crea un account su [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 2. Crea un nuovo cluster (tier gratuito disponibile)
@@ -83,45 +91,44 @@ cd Gestione-Libreria
 4. Configura Network Access (aggiungi il tuo IP o 0.0.0.0/0 per sviluppo)
 5. Ottieni la connection string dal pulsante "Connect"
 
-### 3. Configura il Backend
+### 4. Configura le Variabili d'Ambiente
 
-```bash
-cd backend
-npm install
-```
-
-Crea il file `backend/.env`:
+Crea il file `.env.local` nella root del progetto:
 ```env
+VITE_API_URL=/api
 PORT=5000
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/libreria?retryWrites=true&w=majority
 ```
 
-Avvia il backend:
+Sostituisci `username`, `password` e l'URL con i tuoi dati MongoDB Atlas.
+
+### 5. Avvia l'Applicazione
+
+**Un solo comando per avviare tutto:**
 ```bash
 npm run dev
 ```
 
-### 4. Configura il Frontend
+Questo avvierà automaticamente sia il backend (porta 5000) che il frontend (porta 3000).
 
-Torna alla root del progetto:
+### 6. Apri l'Applicazione
+
+Naviga su `http://localhost:3000` nel tuo browser.
+
+---
+
+### Comandi Alternativi
+
+Se preferisci avviare frontend e backend separatamente:
+
+**Solo Frontend:**
 ```bash
-cd ..
-npm install
+npm run dev:frontend
 ```
 
-Crea il file `.env.local`:
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
-Avvia il frontend:
+**Solo Backend:**
 ```bash
-npm run dev
-```
-
-### 5. Apri l'Applicazione
-
-Naviga su `http://localhost:5173` nel tuo browser.
+npm run dev:backend
 
 ## 📡 API Endpoints
 
@@ -185,14 +192,18 @@ Naviga su `http://localhost:5173` nel tuo browser.
 
 ## 🛠️ Script Disponibili
 
-### Frontend
+### Script Principali (dalla root)
 ```bash
-npm run dev      # Avvia dev server
-npm run build    # Build per produzione
-npm run preview  # Anteprima build
+npm run dev              # Avvia backend + frontend simultaneamente
+npm run install:all      # Installa dipendenze di backend e frontend
+npm run dev:frontend     # Avvia solo il frontend (porta 3000)
+npm run dev:backend      # Avvia solo il backend (porta 5000)
+npm run build            # Build del frontend per produzione
+npm run build:backend    # Build del backend per produzione
+npm run preview          # Anteprima build frontend
 ```
 
-### Backend
+### Script Backend (da ./backend)
 ```bash
 npm run dev      # Avvia con hot-reload (tsx watch)
 npm run build    # Compila TypeScript

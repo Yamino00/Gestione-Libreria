@@ -2,11 +2,17 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import userRoutes from './routes/userRoutes.js';
 import bookRoutes from './routes/bookRoutes.js';
 import loanRoutes from './routes/loanRoutes.js';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Carica .env.local dalla root del progetto
+dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;

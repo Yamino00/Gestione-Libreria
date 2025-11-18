@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import type { User, Book, Loan, LibraryData } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const useLibraryData = (): LibraryData => {
   const [users, setUsers] = useState<User[]>([]);
