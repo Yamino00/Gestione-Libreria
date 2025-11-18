@@ -16,10 +16,11 @@ interface StatCardProps {
     icon: React.ReactNode;
     iconWrapperClass: string;
     borderClass: string;
+    hoverClass: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, iconWrapperClass, borderClass }) => (
-    <div className={`bg-white p-6 rounded-2xl shadow-lg flex items-center space-x-5 border border-l-4 ${borderClass}`}>
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, iconWrapperClass, borderClass, hoverClass }) => (
+    <div className={`bg-white p-6 rounded-2xl shadow-lg flex items-center space-x-5 border border-l-4 ${borderClass} ${hoverClass} transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1`}>
         <div className={`p-4 rounded-xl shadow-lg ${iconWrapperClass}`}>{icon}</div>
         <div>
             <p className="text-base font-medium text-slate-500">{title}</p>
@@ -63,9 +64,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ libraryData }) => 
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <StatCard title="Libri Totali" value={books.length} icon={<BookIcon className="h-8 w-8 text-white" />} iconWrapperClass="bg-gradient-to-br from-sky-400 to-primary" borderClass="border-primary"/>
-        <StatCard title="Utenti Registrati" value={users.length} icon={<UsersIcon className="h-8 w-8 text-white" />} iconWrapperClass="bg-gradient-to-br from-teal-400 to-accent-green" borderClass="border-accent-green"/>
-        <StatCard title="Prestiti Attivi" value={activeLoans} icon={<CollectionIcon className="h-8 w-8 text-white" />} iconWrapperClass="bg-gradient-to-br from-amber-400 to-accent-amber" borderClass="border-accent-amber"/>
+        <StatCard title="Libri Totali" value={books.length} icon={<BookIcon className="h-8 w-8 text-white" />} iconWrapperClass="bg-gradient-to-br from-sky-400 to-primary" borderClass="border-primary" hoverClass="hover:bg-sky-50"/>
+        <StatCard title="Utenti Registrati" value={users.length} icon={<UsersIcon className="h-8 w-8 text-white" />} iconWrapperClass="bg-gradient-to-br from-teal-400 to-accent-green" borderClass="border-accent-green" hoverClass="hover:bg-teal-50"/>
+        <StatCard title="Prestiti Attivi" value={activeLoans} icon={<CollectionIcon className="h-8 w-8 text-white" />} iconWrapperClass="bg-gradient-to-br from-amber-400 to-accent-amber" borderClass="border-accent-amber" hoverClass="hover:bg-orange-50"/>
       </div>
 
       <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80">
