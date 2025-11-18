@@ -34,16 +34,18 @@ export const SideNav: React.FC<SideNavProps> = ({ activeView, setActiveView }) =
 
   return (
     <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-      <div className="flex flex-col flex-grow bg-white border-r border-slate-200 pt-5 pb-4 overflow-y-auto">
-        <div className="flex items-center flex-shrink-0 px-4">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8 text-primary mr-3">
-                <path d="M12 2.25a.75.75 0 01.75.75v11.522c2.544-1.385 5.346-1.396 8.001 0V4.623a.75.75 0 011.5 0v14.002a2.25 2.25 0 01-2.25 2.25H4.001a2.25 2.25 0 01-2.25-2.25V4.623a.75.75 0 011.5 0v13.521c2.655-1.396 5.457-1.385 8.001 0V3a.75.75 0 01.75-.75z" />
-            </svg>
-            <h1 className="text-xl font-bold tracking-tight text-slate-800">
+      <div className="flex flex-col flex-grow bg-white border-r border-slate-200 pt-3 pb-4 overflow-y-auto">
+        <div className="flex flex-col items-center flex-shrink-0 px-2 mb-1">
+            <img 
+              src="/logo.png" 
+              alt="Logo Libreria" 
+              className="h-40 w-40 -mb-2"
+            />
+            <h1 className="text-xl font-bold tracking-tight text-slate-800 text-center">
                 Gestionale Libreria
             </h1>
         </div>
-        <div className="mt-5 flex-grow flex flex-col">
+        <div className="mt-1 flex-grow flex flex-col">
             <nav className="flex-1 px-2 space-y-1" aria-label="Sidebar">
                 {navItems.map(({ view, label, icon }) => (
                 <button
