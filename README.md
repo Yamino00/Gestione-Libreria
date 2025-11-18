@@ -243,10 +243,16 @@ Contributi, issues e feature requests sono benvenuti!
 
 Questo progetto è open source.
 
-## 👤 Autore
+## 👤 Autori
 
 **Federico Leccese**
 - GitHub: [@Yamino00](https://github.com/Yamino00)
+
+**Davide Pellegrino**
+- GitHub: [@Dadoo21](https://github.com/Dadoo21)
+
+**Alessando Di Venere**
+- GitHub: [@alessandrodv93](https://github.com/alessandrodv93)
 
 ## 🙏 Riconoscimenti
 
